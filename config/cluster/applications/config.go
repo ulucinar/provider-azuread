@@ -20,6 +20,7 @@ func Configure(p *config.Provider) {
 				"tags",
 			},
 		}
+		r.UseAsync = false
 	})
 	p.AddResourceConfigurator("azuread_application_app_role", func(r *config.Resource) {
 		r.References["application_id"] = config.Reference{
