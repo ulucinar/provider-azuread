@@ -23,6 +23,7 @@ import (
 
 	v1beta2 "github.com/upbound/provider-azuread/v2/apis/cluster/applications/v1beta2"
 	features "github.com/upbound/provider-azuread/v2/internal/features"
+	ratelimiter2 "github.com/upbound/provider-azuread/v2/internal/ratelimiter"
 )
 
 // SetupGated adds a controller that reconciles Application managed resources.
@@ -41,6 +42,12 @@ func Setup(mgr ctrl.Manager, o tjcontroller.Options) error {
 	var initializers managed.InitializerChain
 	eventHandler := handler.NewEventHandler(handler.WithLogger(o.Logger.WithValues("gvk", v1beta2.Application_GroupVersionKind)))
 	ac := tjcontroller.NewAPICallbacks(mgr, xpresource.ManagedKind(v1beta2.Application_GroupVersionKind), tjcontroller.WithEventHandler(eventHandler), tjcontroller.WithStatusUpdates(false))
+
+	rl := ratelimiter2.NewEncapsulatingRateLimiter()
+	configs := ratelimiter2.Configurations{
+		RateLimiter: rl,
+	}
+
 	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnecter(
 			tjcontroller.NewTerraformPluginSDKAsyncConnector(mgr.GetClient(), o.OperationTrackerStore, o.SetupFn, o.Provider.Resources["azuread_application"],
@@ -51,7 +58,10 @@ func Setup(mgr ctrl.Manager, o tjcontroller.Options) error {
 				tjcontroller.WithTerraformPluginSDKAsyncManagementPolicies(o.Features.Enabled(features.EnableBetaManagementPolicies)))),
 		managed.WithLogger(o.Logger.WithValues("controller", name)),
 		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))),
-		managed.WithFinalizer(tjcontroller.NewOperationTrackerFinalizer(o.OperationTrackerStore, xpresource.NewAPIFinalizer(mgr.GetClient(), managed.FinalizerName))),
+		managed.WithFinalizer(ratelimiter2.NewConfigurationFinalizer(
+			tjcontroller.NewOperationTrackerFinalizer(o.OperationTrackerStore, xpresource.NewAPIFinalizer(mgr.GetClient(), managed.FinalizerName)),
+			configs,
+			)),
 		managed.WithTimeout(3 * time.Minute),
 		managed.WithInitializers(initializers),
 		managed.WithPollInterval(o.PollInterval),
@@ -90,10 +100,16 @@ func Setup(mgr ctrl.Manager, o tjcontroller.Options) error {
 
 	r := managed.NewReconciler(mgr, xpresource.ManagedKind(v1beta2.Application_GroupVersionKind), opts...)
 
+	co := o.ForControllerRuntime()
+	co.RateLimiter = rl
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
-		WithOptions(o.ForControllerRuntime()).
+		WithOptions(co).
 		WithEventFilter(xpresource.DesiredStateChanged()).
 		Watches(&v1beta2.Application{}, eventHandler).
-		Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
+		Complete(ratelimiter2.NewConfigurableReconciler(mgr,
+			ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter),
+			v1beta2.Application_GroupVersionKind,
+			configs,
+		))
 }

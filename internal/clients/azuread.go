@@ -71,7 +71,7 @@ func TerraformSetupBuilder(tfProvider *schema.Provider) terraform.SetupFn { //no
 	return func(ctx context.Context, client client.Client, mg xpresource.Managed) (terraform.Setup, error) {
 		ps := terraform.Setup{}
 
-		pcSpec, err := resolveProviderConfig(ctx, client, mg)
+		pcSpec, err := ResolveProviderConfig(ctx, client, mg)
 		if err != nil {
 			return terraform.Setup{}, err
 		}
@@ -212,7 +212,7 @@ func enrichLocalSecretRefs(pc *namespacedv1beta1.ProviderConfig, mg xpresource.M
 	}
 }
 
-func resolveProviderConfig(ctx context.Context, crClient client.Client, mg xpresource.Managed) (*namespacedv1beta1.ProviderConfigSpec, error) {
+func ResolveProviderConfig(ctx context.Context, crClient client.Client, mg xpresource.Managed) (*namespacedv1beta1.ProviderConfigSpec, error) {
 	switch managed := mg.(type) {
 	case xpresource.LegacyManaged: //nolint:staticcheck // still need to support LegacyManaged resources
 		return resolveProviderConfigLegacy(ctx, crClient, managed)

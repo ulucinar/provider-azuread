@@ -19,10 +19,10 @@ require (
 	github.com/hashicorp/terraform-provider-azuread v1.6.1-0.20230727144955-0adfe586f500
 	github.com/pkg/errors v0.9.1
 	google.golang.org/grpc v1.79.3
-	k8s.io/api v0.35.2
+	k8s.io/api v0.35.3
 	k8s.io/apiextensions-apiserver v0.35.0
-	k8s.io/apimachinery v0.35.2
-	k8s.io/client-go v0.35.2
+	k8s.io/apimachinery v0.35.3
+	k8s.io/client-go v0.35.3
 	sigs.k8s.io/controller-runtime v0.23.3
 	sigs.k8s.io/controller-tools v0.20.0
 )
@@ -158,7 +158,7 @@ require (
 	k8s.io/gengo/v2 v2.0.0-20251215205346-5ee0d033ba5b // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20260127142750-a19766b6e2d4 // indirect
-	k8s.io/utils v0.0.0-20260210185600-b8788abfbbc2 // indirect
+	k8s.io/utils v0.0.0-20260319190234-28399d86e0b5 // indirect
 	sigs.k8s.io/json v0.0.0-20250730193827-2d320260d730 // indirect
 	sigs.k8s.io/randfill v1.0.0 // indirect
 	sigs.k8s.io/structured-merge-diff/v6 v6.3.2-0.20260122202528-d9cc6641c482 // indirect
@@ -167,3 +167,5 @@ require (
 )
 
 replace github.com/hashicorp/terraform-provider-azuread => github.com/upbound/terraform-provider-azuread v0.0.0-20250729204552-723cf3fb6cbe
+
+replace github.com/crossplane/upjet/v2 => ../upjet
