@@ -1,0 +1,27 @@
+apiVersion: azuread.upbound.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: default
+spec:
+  reconciliationPolicy:
+    exponentialFailureRateLimiter:
+      baseDelay: "1s"
+      maxDelay: "10s"
+  credentials:
+    source: Secret
+    secretRef:
+      namespace: crossplane-system
+      name: azuread-creds
+      key: creds
+
+---
+
+apiVersion: applications.azuread.upbound.io/v1beta2
+kind: Application
+metadata:
+  name: example
+spec:
+  forProvider:
+    displayName: example-1
+  providerConfigRef:
+    name: default

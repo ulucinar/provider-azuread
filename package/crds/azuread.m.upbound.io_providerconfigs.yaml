@@ -135,10 +135,13 @@ spec:
                   that allows to access a managed identity.
                 type: string
               reconciliationPolicy:
+                description: ReconciliationPolicy
                 properties:
                   exponentialFailureRateLimiter:
-                    description: ExponentialFailureRateLimiter configures exponential
-                      failure backoff.
+                    description: |-
+                      ExponentialFailureRateLimiter configures the
+                      Exponential Failure Rate Limiter configuration parameters.
+                      Currently, the base-delay and the max-delay are configurable.
                     properties:
                       baseDelay:
                         description: BaseDelay is the initial delay between retries.

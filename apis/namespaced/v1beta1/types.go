@@ -5,41 +5,17 @@
 package v1beta1
 
 import (
+	"github.com/crossplane/upjet/v2/apis/configuration/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
 	xpv2 "github.com/crossplane/crossplane-runtime/v2/apis/common/v2"
 )
 
-// TODO: We also need to make sure if only one of maxDelay or baseDelay is specified, maxDelay >= baseDelay still holds...
-// TODO: Also check the CEL validation rule does not block not specifying maxDelay or baseDelay (!has(...) is currently missing on the field validation rules)
-
-// ExponentialFailureRateLimiter configures exponential failure backoff.
-//
-// +kubebuilder:validation:XValidation:rule="!has(self.maxDelay) || !has(self.baseDelay) || duration(self.maxDelay) >= duration(self.baseDelay)",message="maxDelay must be greater than or equal to baseDelay"
-type ExponentialFailureRateLimiter struct {
-	// MaxDelay is the maximum delay between retries.
-	//
-	// +optional
-	// +kubebuilder:validation:XValidation:rule="duration(self) >= duration('1s')",message="maxDelay must be at least 60s"
-	MaxDelay *metav1.Duration `json:"maxDelay,omitempty"`
-
-	// BaseDelay is the initial delay between retries.
-	//
-	// +optional
-	// +kubebuilder:validation:XValidation:rule="duration(self) >= duration('1s')",message="baseDelay must be at least 1s"
-	BaseDelay *metav1.Duration `json:"baseDelay,omitempty"`
-}
-
-type ReconciliationPolicy struct {
-	// +optional
-	ExponentialFailureRateLimiter *ExponentialFailureRateLimiter `json:"exponentialFailureRateLimiter"`
-}
-
 // A ProviderConfigSpec defines the desired state of a ProviderConfig.
 type ProviderConfigSpec struct {
 	// +optional
-	ReconciliationPolicy *ReconciliationPolicy `json:"reconciliationPolicy"`
+	ReconciliationPolicy *v1alpha1.ReconciliationPolicy `json:"reconciliationPolicy"`
 
 	// Credentials required to authenticate to this provider.
 	Credentials ProviderCredentials `json:"credentials"`

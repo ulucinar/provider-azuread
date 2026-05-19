@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"strings"
 
+	"github.com/crossplane/upjet/v2/apis/configuration/v1alpha1"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	tfsdk "github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 
@@ -277,4 +278,12 @@ func resolveProviderConfigModern(ctx context.Context, crClient client.Client, mg
 		return nil, errors.Wrap(err, errTrackUsage)
 	}
 	return &pcSpec, nil
+}
+
+func ReconciliationPolicy(ctx context.Context, client client.Client, mg xpresource.Managed) (*v1alpha1.ReconciliationPolicy, error) {
+	pcSpec, err := ResolveProviderConfig(ctx, client, mg)
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot resolve the referenced ProviderConfig")
+	}
+	return pcSpec.ReconciliationPolicy, nil
 }

@@ -32,6 +32,7 @@ import (
 	"github.com/upbound/provider-azuread/v2/config/cluster/serviceprincipals"
 	"github.com/upbound/provider-azuread/v2/config/cluster/synchronization"
 	"github.com/upbound/provider-azuread/v2/config/cluster/users"
+	"github.com/upbound/provider-azuread/v2/config/templates"
 )
 
 const (
@@ -115,6 +116,7 @@ func GetProvider(ctx context.Context, sdkProvider *schema.Provider, generationPr
 		ujconfig.WithFeaturesPackage("internal/features"),
 		ujconfig.WithTerraformProvider(sdkProvider),
 		ujconfig.WithSchemaTraversers(&ujconfig.SingletonListEmbedder{}),
+		ujconfig.WithControllerTemplate(templates.ControllerTemplate),
 	)
 
 	bumpVersionsWithEmbeddedLists(pc)
