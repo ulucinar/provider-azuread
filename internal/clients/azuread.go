@@ -72,7 +72,7 @@ func TerraformSetupBuilder(tfProvider *schema.Provider) terraform.SetupFn { //no
 	return func(ctx context.Context, client client.Client, mg xpresource.Managed) (terraform.Setup, error) {
 		ps := terraform.Setup{}
 
-		pcSpec, err := ResolveProviderConfig(ctx, client, mg)
+		pcSpec, err := resolveProviderConfig(ctx, client, mg)
 		if err != nil {
 			return terraform.Setup{}, err
 		}
@@ -213,7 +213,7 @@ func enrichLocalSecretRefs(pc *namespacedv1beta1.ProviderConfig, mg xpresource.M
 	}
 }
 
-func ResolveProviderConfig(ctx context.Context, crClient client.Client, mg xpresource.Managed) (*namespacedv1beta1.ProviderConfigSpec, error) {
+func resolveProviderConfig(ctx context.Context, crClient client.Client, mg xpresource.Managed) (*namespacedv1beta1.ProviderConfigSpec, error) {
 	switch managed := mg.(type) {
 	case xpresource.LegacyManaged: //nolint:staticcheck // still need to support LegacyManaged resources
 		return resolveProviderConfigLegacy(ctx, crClient, managed)
@@ -281,7 +281,7 @@ func resolveProviderConfigModern(ctx context.Context, crClient client.Client, mg
 }
 
 func ReconciliationPolicy(ctx context.Context, client client.Client, mg xpresource.Managed) (*v1alpha1.ReconciliationPolicy, error) {
-	pcSpec, err := ResolveProviderConfig(ctx, client, mg)
+	pcSpec, err := resolveProviderConfig(ctx, client, mg)
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot resolve the referenced ProviderConfig")
 	}
