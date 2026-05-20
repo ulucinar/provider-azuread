@@ -154,7 +154,7 @@ spec:
                         type: string
                         x-kubernetes-validations:
                         - message: maxDelay must be at least 60s
-                          rule: duration(self) >= duration('1s')
+                          rule: duration(self) >= duration('60s')
                     type: object
                     x-kubernetes-validations:
                     - message: maxDelay must be greater than or equal to baseDelay
