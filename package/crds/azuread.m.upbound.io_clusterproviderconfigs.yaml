@@ -142,6 +142,10 @@ spec:
                       ExponentialFailureRateLimiter configures the
                       Exponential Failure Rate Limiter configuration parameters.
                       Currently, the base-delay and the max-delay are configurable.
+                      API Validations:
+                      - baseDelay must be >= 1s, if specified.
+                      - maxDelay must be >= 60s, if specified.
+                      - maxDelay must be >= baseDelay, if both are specified.
                     properties:
                       baseDelay:
                         description: BaseDelay is the initial delay between retries.
