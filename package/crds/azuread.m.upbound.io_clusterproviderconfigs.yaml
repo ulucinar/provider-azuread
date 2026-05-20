@@ -165,6 +165,12 @@ spec:
                       rule: '!has(self.maxDelay) || !has(self.baseDelay) || duration(self.maxDelay)
                         >= duration(self.baseDelay)'
                 type: object
+                x-kubernetes-validations:
+                - message: when maxDelay is omitted it defaults to 60s; baseDelay
+                    must be <= 60s
+                  rule: '!has(self.exponentialFailureRateLimiter) || !has(self.exponentialFailureRateLimiter.baseDelay)
+                    || has(self.exponentialFailureRateLimiter.maxDelay) || duration(self.exponentialFailureRateLimiter.baseDelay)
+                    <= duration(''60s'')'
               tenantID:
                 description: |-
                   TenantID is the Azure AD tenant ID to be used.
